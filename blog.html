@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog & Notes | Sai Hae Naing Lay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:        #070b14;
+      --surface:   #0e1520;
+      --surface2:  #131d2e;
+      --border:    #1a2740;
+      --border2:   #1e2e4a;
+      --accent:    #4f9eff;
+      --accent2:   #7ec8ff;
+      --accent-glow: rgba(79,158,255,0.12);
+      --text:      #e8edf5;
+      --text2:     #8fa3c0;
+      --text3:     #4a6280;
+      --radius:    14px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(79,158,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,158,255,0.035) 1px, transparent 1px);
+      background-size: 52px 52px;
+      pointer-events: none; z-index: 0;
+    }
+
+    body.light {
+      --bg:        #f2f4f8;
+      --surface:   #ffffff;
+      --surface2:  #e8ecf2;
+      --border:    #d0d8e8;
+      --border2:   #c0cce0;
+      --text:      #0f1929;
+      --text2:     #445066;
+      --text3:     #8898aa;
+      --accent-glow: rgba(79,158,255,0.09);
+    }
+
+    body.light::before {
+      background-image:
+        linear-gradient(rgba(79,158,255,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,158,255,0.06) 1px, transparent 1px);
+    }
+
+    /* ── NAV ── */
+    #navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px 40px;
+      background: rgba(7,11,20,0.82);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    body.light #navbar { background: rgba(242,244,248,0.88); }
+
+    .nav-inner {
+      display: flex; align-items: center; gap: 4px;
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 999px; padding: 6px 10px;
+    }
+
+    .nav-links { display: flex; gap: 2px; list-style: none; }
+
+    .nav-links a {
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 50%;
+      color: var(--text2); font-size: 14px;
+      text-decoration: none; transition: all 0.2s;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      background: var(--accent-glow); color: var(--accent);
+    }
+
+    .nav-links a .tip {
+      position: absolute; top: calc(100% + 10px);
+      left: 50%; transform: translateX(-50%);
+      background: var(--surface2); border: 1px solid var(--border2);
+      color: var(--text); font-size: 11px; padding: 4px 10px;
+      border-radius: 8px; white-space: nowrap;
+      opacity: 0; pointer-events: none; transition: opacity 0.16s;
+    }
+    .nav-links a:hover .tip { opacity: 1; }
+
+    .theme-toggle {
+      position: fixed; right: 28px; top: 20px;
+      display: flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px;
+      background: var(--surface); border: 1px solid var(--border2);
+      border-radius: 50%; color: var(--text2); font-size: 14px;
+      cursor: pointer; transition: all 0.2s; z-index: 101;
+    }
+    .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* ── BLOG LISTING ── */
+    #blog-listing {
+      min-height: 100vh;
+      padding: 120px 32px 80px;
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative; z-index: 1;
+    }
+
+    .blog-header {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+
+    .blog-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 14px; display: block;
+    }
+
+    .blog-title {
+      font-family: 'Oxanium', sans-serif;
+      font-size: clamp(26px, 4vw, 46px);
+      font-weight: 700; color: var(--text);
+      margin-bottom: 14px; line-height: 1.1;
+    }
+
+    .blog-title span { color: var(--accent); }
+
+    .blog-sub {
+      font-size: 15px; color: var(--text2);
+      max-width: 600px; margin: 0 auto;
+      line-height: 1.75;
+    }
+
+    /* filter tabs */
+    .filter-row {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      justify-content: center; margin-bottom: 52px;
+    }
+
+    .fbtn {
+      padding: 8px 22px; border-radius: 999px;
+      font-size: 13px; font-weight: 500;
+      border: 1px solid var(--border2);
+      background: var(--surface); color: var(--text2);
+      cursor: pointer; transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .fbtn.active, .fbtn:hover {
+      background: var(--accent); color: #fff; border-color: transparent;
+    }
+
+    /* card grid */
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px;
+    }
+
+    .blog-card {
+      background: rgba(14,21,32,0.85);
+      border: 1px solid var(--border);
+      border-radius: 18px; overflow: hidden;
+      cursor: pointer; transition: all 0.26s;
+      backdrop-filter: blur(10px);
+      display: flex; flex-direction: column;
+    }
+
+    body.light .blog-card { background: rgba(255,255,255,0.9); }
+
+    .blog-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-5px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    }
+
+    .blog-card.hidden { display: none; }
+
+    .blog-card-img {
+      width: 100%; height: 220px; object-fit: cover;
+      display: block; border-bottom: 1px solid var(--border);
+      transition: transform 0.4s;
+    }
+    .blog-card:hover .blog-card-img { transform: scale(1.04); }
+    .blog-card-img-wrap { overflow: hidden; }
+
+    .blog-card-body {
+      padding: 22px 22px 20px;
+      display: flex; flex-direction: column; flex: 1;
+    }
+
+    .blog-card-tag {
+      display: inline-block;
+      padding: 3px 11px; border-radius: 999px;
+      font-size: 10.5px; font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      background: var(--accent-glow); color: var(--accent);
+      border: 1px solid rgba(79,158,255,0.2);
+      margin-bottom: 12px;
+    }
+
+    .blog-card-title {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 18px; font-weight: 700;
+      color: var(--text); margin-bottom: 10px; line-height: 1.3;
+    }
+
+    .blog-card-desc {
+      font-size: 13px; color: var(--text2); line-height: 1.65;
+      margin-bottom: 18px; flex: 1;
+    }
+
+    .blog-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 14px; border-top: 1px solid var(--border);
+      font-size: 12px; color: var(--text3);
+    }
+
+    .blog-card-read {
+      font-size: 12.5px; font-weight: 600; color: var(--accent);
+      display: flex; align-items: center; gap: 5px;
+      transition: gap 0.18s;
+    }
+    .blog-card:hover .blog-card-read { gap: 9px; }
+
+    /* ── ARTICLE VIEW ── */
+    #article-view {
+      display: none;
+      min-height: 100vh;
+      position: relative; z-index: 1;
+    }
+
+    #article-view.visible { display: block; }
+
+    .article-hero {
+      width: 100%; height: 420px; object-fit: cover; display: block;
+    }
+
+    .article-body {
+      max-width: 780px; margin: 0 auto;
+      padding: 52px 32px 100px;
+    }
+
+    .article-back {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 600; color: var(--text2);
+      text-decoration: none; margin-bottom: 32px;
+      cursor: pointer; border: none; background: none;
+      transition: color 0.2s; font-family: 'DM Sans', sans-serif;
+    }
+    .article-back:hover { color: var(--accent); }
+
+    .article-tag {
+      display: inline-block;
+      padding: 4px 13px; border-radius: 999px;
+      font-size: 11px; font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      background: var(--accent-glow); color: var(--accent);
+      border: 1px solid rgba(79,158,255,0.2);
+      margin-bottom: 18px;
+    }
+
+    .article-title {
+      font-family: 'Oxanium', sans-serif;
+      font-size: clamp(24px, 4vw, 38px);
+      font-weight: 700; color: var(--text);
+      margin-bottom: 10px; line-height: 1.15;
+    }
+
+    .article-meta {
+      font-size: 12px; color: var(--text3);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 40px;
+      display: flex; gap: 18px;
+    }
+
+    .article-content h2 {
+      font-family: 'Oxanium', sans-serif;
+      font-size: 20px; font-weight: 700;
+      color: var(--text); margin: 36px 0 14px;
+    }
+
+    .article-content p {
+      font-size: 15px; color: var(--text2);
+      line-height: 1.82; margin-bottom: 16px;
+    }
+
+    .article-content ul {
+      margin: 0 0 18px 22px;
+    }
+
+    .article-content li {
+      font-size: 15px; color: var(--text2);
+      line-height: 1.75; margin-bottom: 6px;
+    }
+
+    .article-content code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px; background: var(--surface2);
+      border: 1px solid var(--border2);
+      padding: 2px 8px; border-radius: 5px; color: var(--accent2);
+    }
+
+    .article-content pre {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 10px; padding: 20px 22px;
+      overflow-x: auto; margin: 20px 0;
+    }
+
+    .article-content pre code {
+      background: none; border: none;
+      padding: 0; font-size: 13px; color: var(--text2);
+    }
+
+    .article-content strong { color: var(--text); font-weight: 600; }
+
+    .article-divider {
+      height: 1px; background: var(--border2);
+      margin: 40px 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center; padding: 28px;
+      border-top: 1px solid var(--border);
+      font-size: 13px; color: var(--text3);
+      position: relative; z-index: 1;
+    }
+    footer span { color: var(--accent); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .blog-grid { grid-template-columns: 1fr; }
+      #blog-listing { padding: 100px 20px 60px; }
+      .article-body { padding: 36px 20px 80px; }
+      #navbar { padding: 14px 16px; }
+      .theme-toggle { right: 14px; top: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <ul class="nav-links">
+        <li><a href="index.html"  ><i class="fas fa-house"></i>              <span class="tip">Home</span></a></li>
+        <li><a href="index.html#about"  ><i class="fas fa-user"></i>         <span class="tip">About</span></a></li>
+        <li><a href="index.html#portfolio"><i class="fas fa-table-cells-large"></i><span class="tip">Projects</span></a></li>
+        <li><a href="index.html#skills" ><i class="fas fa-code"></i>         <span class="tip">Skills</span></a></li>
+        <li><a href="index.html#contact"><i class="fas fa-envelope"></i>     <span class="tip">Contact</span></a></li>
+        <li><a href="blog.html" class="active"><i class="fas fa-book-open"></i><span class="tip">Blog</span></a></li>
+      </ul>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <i class="fas fa-sun"></i>
+    </button>
+  </nav>
+
+  <!-- ══ BLOG LISTING ══ -->
+  <div id="blog-listing">
+    <div class="blog-header">
+      <span class="blog-label">Notes &amp; Learnings</span>
+      <h1 class="blog-title">Blogs &amp; <span>Learnings</span></h1>
+      <p class="blog-sub">Practical notes on AI/ML, web development, and things I've built and learned along the way.</p>
+    </div>
+
+    <div class="filter-row">
+      <button class="fbtn active" data-tag="all">All</button>
+      <button class="fbtn" data-tag="AI/CV">AI / CV</button>
+      <button class="fbtn" data-tag="Python">Python</button>
+      <button class="fbtn" data-tag="React">React</button>
+      <button class="fbtn" data-tag="Full-Stack">Full-Stack</button>
+    </div>
+
+    <div class="blog-grid" id="blogGrid">
+
+      <!-- 1: YOLO Cattle -->
+      <div class="blog-card" data-tag="AI/CV" data-post="yolo-cattle" onclick="openPost('yolo-cattle')">
+        <div class="blog-card-img-wrap">
+          <img src="images/Result.png" alt="Cattle Behavior" class="blog-card-img" />
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-card-tag">AI / CV</span>
+          <h2 class="blog-card-title">Training YOLO for Cattle Behavior Detection</h2>
+          <p class="blog-card-desc">How I built an end-to-end pipeline to classify cow behaviors from CCTV — from Roboflow annotation to real farm evaluation.</p>
+          <div class="blog-card-footer">
+            <span><i class="fas fa-clock"></i> 6 min read</span>
+            <span class="blog-card-read">Read more <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2: Smart Retail -->
+      <div class="blog-card" data-tag="AI/CV" data-post="smart-retail" onclick="openPost('smart-retail')">
+        <div class="blog-card-img-wrap">
+          <img src="images/face-recognition.jpg" alt="Smart Retail" class="blog-card-img" />
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-card-tag">AI / CV</span>
+          <h2 class="blog-card-title">Smart Retail Analytics: People Counting, Face Recognition &amp; Heat Maps</h2>
+          <p class="blog-card-desc">Building a comprehensive retail AI system that combines real-time people counting, face matching, and heat-map overlays on a live dashboard.</p>
+          <div class="blog-card-footer">
+            <span><i class="fas fa-clock"></i> 7 min read</span>
+            <span class="blog-card-read">Read more <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3: Voice Ads -->
+      <div class="blog-card" data-tag="Python" data-post="voice-ads" onclick="openPost('voice-ads')">
+        <div class="blog-card-img-wrap">
+          <img src="images/voice-controlled_ads.webp" alt="Voice Ads" class="blog-card-img" />
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-card-tag">Python</span>
+          <h2 class="blog-card-title">Building a Voice-Controlled Ad Display System with Python &amp; Flask</h2>
+          <p class="blog-card-desc">Continuous speech recognition, real-time ad switching, and an auto-demo fallback — how I made this reliable enough for an actual signage system.</p>
+          <div class="blog-card-footer">
+            <span><i class="fas fa-clock"></i> 5 min read</span>
+            <span class="blog-card-read">Read more <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4: Human Action -->
+      <div class="blog-card" data-tag="Python" data-post="human-action" onclick="openPost('human-action')">
+        <div class="blog-card-img-wrap">
+          <img src="images/humanaction-reco.PNG" alt="Human Action" class="blog-card-img" />
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-card-tag">Python</span>
+          <h2 class="blog-card-title">Human Action Recognition: A Modular Image Processing Pipeline</h2>
+          <p class="blog-card-desc">Step-by-step notes on preprocessing, segmentation, feature extraction, and classification using classical image processing and MediaPipe.</p>
+          <div class="blog-card-footer">
+            <span><i class="fas fa-clock"></i> 5 min read</span>
+            <span class="blog-card-read">Read more <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5: LINE Bot -->
+      <div class="blog-card" data-tag="Full-Stack" data-post="line-bot" onclick="openPost('line-bot')">
+        <div class="blog-card-img-wrap">
+          <img src="images/line-bot-sushi.png" alt="LINE Bot" class="blog-card-img" />
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-card-tag">Full-Stack</span>
+          <h2 class="blog-card-title">LINE Bot Ordering System: Auth, Role Dashboards &amp; Real-Time Orders</h2>
+          <p class="blog-card-desc">How I built a production ordering system inside LINE using Node.js, LIFF, Supabase, and a Rich Menu — with three user roles and live order tracking.</p>
+          <div class="blog-card-footer">
+            <span><i class="fas fa-clock"></i> 8 min read</span>
+            <span class="blog-card-read">Read more <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6: Weather Dashboard -->
+      <div class="blog-card" data-tag="React" data-post="weather-dashboard" onclick="openPost('weather-dashboard')">
+        <div class="blog-card-img-wrap">
+          <img src="images/weather-dashboard.png" alt="Weather Dashboard" class="blog-card-img" />
+        </div>
+        <div class="blog-card-body">
+          <span class="blog-card-tag">React</span>
+          <h2 class="blog-card-title">Weather Dashboard: Building My First React App with Live API Data</h2>
+          <p class="blog-card-desc">City search, real-time weather, 5-day forecast, component structure, and deploying to Vercel — everything I learned building this React project.</p>
+          <div class="blog-card-footer">
+            <span><i class="fas fa-clock"></i> 5 min read</span>
+            <span class="blog-card-read">Read more <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ ARTICLE VIEW ══ -->
+  <div id="article-view">
+
+    <!-- POST: yolo-cattle -->
+    <article id="post-yolo-cattle" class="post-content" style="display:none">
+      <img src="images/Result.png" alt="Cattle Behavior" class="article-hero" />
+      <div class="article-body">
+        <button class="article-back" onclick="closePost()"><i class="fas fa-arrow-left"></i> Back to Notes</button>
+        <span class="article-tag">AI / CV</span>
+        <h1 class="article-title">Training YOLO for Cattle Behavior Detection</h1>
+        <div class="article-meta">
+          <span><i class="fas fa-clock"></i> 6 min read</span>
+          <span><i class="fas fa-tag"></i> YOLOv8, YOLOv11, Roboflow, Python</span>
+        </div>
+        <div class="article-content">
+          <p>This was my senior project — building a computer vision system that could watch CCTV footage of cows and classify their behavior in real time. The goal was to detect estrus (heat) automatically, which is important for livestock management.</p>
+
+          <h2>Why Behavior Recognition?</h2>
+          <p>Estrus detection in cattle is traditionally done manually, which requires constant observation and is easy to miss. Mounting behavior is a key indicator. If a model can detect mounting reliably from video, it can alert farmers automatically and save a lot of time.</p>
+
+          <h2>Dataset Construction</h2>
+          <p>The first challenge was data. We recorded footage from real farm CCTV cameras, then manually annotated each frame using <code>Roboflow</code>. We labeled four behavior classes:</p>
+          <ul>
+            <li>Standing</li>
+            <li>Lying</li>
+            <li>Grazing</li>
+            <li>Mounting</li>
+          </ul>
+          <p>Dataset quality matters more than quantity. We spent a lot of time making sure labels were consistent — a blurry frame with a wrong label is worse than no frame at all.</p>
+
+          <h2>Model Training</h2>
+          <p>We trained both <code>YOLOv8</code> and <code>YOLOv11</code> to compare performance. YOLOv11 gave better results on our dataset, especially for detecting the mounting class which had fewer examples.</p>
+          <pre><code>yolo train model=yolov11n.pt data=cattle.yaml epochs=50 imgsz=640</code></pre>
+          <p>Key things I learned about training:</p>
+          <ul>
+            <li>Always check your class distribution — imbalanced data will hurt your minority class badly</li>
+            <li>Use augmentation (flip, rotate, brightness) but don't overdo it</li>
+            <li>Validate on real farm footage, not just your training split</li>
+          </ul>
+
+          <h2>Evaluation on Real Footage</h2>
+          <p>The hardest part was getting the model to work on actual farm CCTV. The cameras were low resolution and had different angles than our training data. We had to fine-tune with a small set of real-farm-specific images to bridge that gap.</p>
+
+          <h2>What I'd Do Differently</h2>
+          <p>If I did this again, I'd collect data from multiple farms and multiple camera angles from the start. A model trained on one farm's footage generalizes poorly to another farm's lighting and angle. Also, tracking behavior over time (not just per-frame classification) would make the system much more useful.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- POST: smart-retail -->
+    <article id="post-smart-retail" class="post-content" style="display:none">
+      <img src="images/face-recognition.jpg" alt="Smart Retail" class="article-hero" />
+      <div class="article-body">
+        <button class="article-back" onclick="closePost()"><i class="fas fa-arrow-left"></i> Back to Notes</button>
+        <span class="article-tag">AI / CV</span>
+        <h1 class="article-title">Smart Retail Analytics: People Counting, Face Recognition &amp; Heat Maps</h1>
+        <div class="article-meta">
+          <span><i class="fas fa-clock"></i> 7 min read</span>
+          <span><i class="fas fa-tag"></i> YOLO, OpenCV, Face Recognition, NumPy</span>
+        </div>
+        <div class="article-content">
+          <p>This was an internship project at CAS Cogniser that combined several computer vision tasks into one system: counting people entering and leaving a store, matching faces against a customer database, and generating heat maps of where people spent the most time.</p>
+
+          <h2>System Overview</h2>
+          <p>The system had three main modules running in parallel on a video stream:</p>
+          <ul>
+            <li><strong>People counter</strong> — entry/exit tracking using line-crossing detection</li>
+            <li><strong>Face recognizer</strong> — match detected faces against a stored database</li>
+            <li><strong>Heat map generator</strong> — track movement positions and build a density map</li>
+          </ul>
+
+          <h2>People Counting with Line Crossing</h2>
+          <p>I used <code>YOLO</code> to detect people in each frame, then tracked them across frames using their bounding box positions. When a tracked person crosses a virtual line in the frame, it counts as an entry or exit depending on direction.</p>
+          <p>The tricky part is handling occlusion — when two people overlap, the tracker can get confused. I used a simple centroid distance approach which worked well enough for the store's layout.</p>
+
+          <h2>Face Recognition Pipeline</h2>
+          <p>For face recognition, the pipeline was: detect face → align → extract embedding → compare to database. When a match is found within a distance threshold, the dashboard shows "matched" with the customer ID. Otherwise it shows "no data".</p>
+          <pre><code># Simplified face matching logic
+embedding = get_embedding(face_crop)
+distances = [cosine_distance(embedding, db_emb) for db_emb in database]
+if min(distances) < THRESHOLD:
+    return "matched", customer_ids[argmin(distances)]
+return "no data", None</code></pre>
+
+          <h2>Heat Map Generation</h2>
+          <p>For each frame, I recorded the center point of every detected person. After accumulating these over time, I used <code>NumPy</code> to build a 2D histogram of positions, then applied a Gaussian blur and overlaid it as a colored transparency on the store map. High-traffic areas appeared in red, low-traffic in blue.</p>
+
+          <h2>Dashboard</h2>
+          <p>Everything fed into a live web dashboard showing the video stream, real-time occupancy count, entry/exit log, matched face list, and the heat map. Building this in a single day was intense but satisfying.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- POST: voice-ads -->
+    <article id="post-voice-ads" class="post-content" style="display:none">
+      <img src="images/voice-controlled_ads.webp" alt="Voice Ads" class="article-hero" />
+      <div class="article-body">
+        <button class="article-back" onclick="closePost()"><i class="fas fa-arrow-left"></i> Back to Notes</button>
+        <span class="article-tag">Python</span>
+        <h1 class="article-title">Building a Voice-Controlled Ad Display System with Python &amp; Flask</h1>
+        <div class="article-meta">
+          <span><i class="fas fa-clock"></i> 5 min read</span>
+          <span><i class="fas fa-tag"></i> Python, Flask, SpeechRecognition</span>
+        </div>
+        <div class="article-content">
+          <p>During my internship, I built a system where voice commands could control which advertisement was displayed on a screen in real time. The use case was a digital signage screen in a retail environment where staff could switch ads hands-free.</p>
+
+          <h2>Core Challenge: Reliable Continuous Listening</h2>
+          <p>The biggest problem with voice systems is reliability. Background noise, accents, and silence all cause issues. I used Python's <code>SpeechRecognition</code> library with Google's speech API, running in a background thread so it never blocked the main app.</p>
+          <pre><code>import speech_recognition as sr
+
+def listen_loop():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        r.adjust_for_ambient_noise(source)
+        while True:
+            try:
+                audio = r.listen(source, timeout=3)
+                command = r.recognize_google(audio).lower()
+                handle_command(command)
+            except sr.WaitTimeoutError:
+                pass
+            except sr.UnknownValueError:
+                pass</code></pre>
+
+          <h2>Command Mapping</h2>
+          <p>I built a dynamic command map that read the video folder structure automatically. If you had folders named "food", "tech", and "sale", the system would recognize phrases like "show food" or "play tech" without any hardcoding.</p>
+
+          <h2>Auto-Demo Fallback</h2>
+          <p>If no command is given for 30 seconds, the system falls into demo mode and cycles through all available ads automatically. This was important for when the screen was unattended — it kept content playing rather than freezing on one ad.</p>
+
+          <h2>Flask UI</h2>
+          <p>A small Flask web app provided a browser-based control panel as a backup. Staff could click to switch ads if voice wasn't working. The Flask backend and the listener shared the same state via a thread-safe queue.</p>
+
+          <h2>What I Learned</h2>
+          <p>Threading in Python is trickier than it looks when you need shared state. Using a <code>queue.Queue</code> instead of shared variables was the key to making it stable. Also, pre-loading videos into memory rather than streaming from disk made switching instant instead of having a 1–2 second delay.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- POST: human-action -->
+    <article id="post-human-action" class="post-content" style="display:none">
+      <img src="images/humanaction-reco.PNG" alt="Human Action" class="article-hero" />
+      <div class="article-body">
+        <button class="article-back" onclick="closePost()"><i class="fas fa-arrow-left"></i> Back to Notes</button>
+        <span class="article-tag">Python</span>
+        <h1 class="article-title">Human Action Recognition: A Modular Image Processing Pipeline</h1>
+        <div class="article-meta">
+          <span><i class="fas fa-clock"></i> 5 min read</span>
+          <span><i class="fas fa-tag"></i> Python, MediaPipe, OpenCV, Image Processing</span>
+        </div>
+        <div class="article-content">
+          <p>This was a team project for an image processing course. The goal was to recognize human actions from images using classical image processing techniques — no deep learning allowed. It forced us to really understand what's happening under the hood.</p>
+
+          <h2>Pipeline Overview</h2>
+          <p>The system was broken into four clean stages:</p>
+          <ul>
+            <li><strong>Preprocessing</strong> — resize, normalize, convert color spaces</li>
+            <li><strong>Segmentation</strong> — separate the person from the background</li>
+            <li><strong>Feature extraction</strong> — extract meaningful descriptors</li>
+            <li><strong>Classification</strong> — assign an action label</li>
+          </ul>
+
+          <h2>Segmentation</h2>
+          <p>We tried background subtraction first, but it broke badly with varied backgrounds. We switched to using <code>MediaPipe</code>'s selfie segmentation to get a reliable person mask, which we then used to isolate the subject before processing.</p>
+
+          <h2>Feature Extraction</h2>
+          <p>With MediaPipe's pose landmarks, we extracted 33 keypoints per frame. From these we computed joint angles (e.g., elbow angle, knee angle) and relative distances between keypoints. These angles and ratios were much more robust to scale and position differences than raw pixel coordinates.</p>
+          <pre><code># Compute angle between three landmarks
+def calc_angle(a, b, c):
+    a, b, c = np.array(a), np.array(b), np.array(c)
+    radians = np.arctan2(c[1]-b[1], c[0]-b[0]) - \
+              np.arctan2(a[1]-b[1], a[0]-b[0])
+    return np.abs(np.degrees(radians))</code></pre>
+
+          <h2>Classification</h2>
+          <p>We used a simple rule-based classifier first (if knee angle > 160 and hip angle > 150 → "standing"), then moved to a KNN classifier trained on a labeled dataset of poses. KNN worked surprisingly well given the clean feature vector we'd built.</p>
+
+          <h2>GUI App</h2>
+          <p>We wrapped everything in a Python GUI app using Tkinter that let users load an image or enable the webcam, run the pipeline, and see the result with annotated landmarks drawn on the image. Making it interactive made the demo much more convincing.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- POST: line-bot -->
+    <article id="post-line-bot" class="post-content" style="display:none">
+      <img src="images/line-bot-sushi.png" alt="LINE Bot" class="article-hero" />
+      <div class="article-body">
+        <button class="article-back" onclick="closePost()"><i class="fas fa-arrow-left"></i> Back to Notes</button>
+        <span class="article-tag">Full-Stack</span>
+        <h1 class="article-title">LINE Bot Ordering System: Auth, Role Dashboards &amp; Real-Time Orders</h1>
+        <div class="article-meta">
+          <span><i class="fas fa-clock"></i> 8 min read</span>
+          <span><i class="fas fa-tag"></i> Node.js, Express, LINE LIFF, Supabase</span>
+        </div>
+        <div class="article-content">
+          <p>My most complex project so far. The goal was to build a complete food ordering system entirely inside LINE — one of the most popular messaging apps in Thailand — for a sushi cafe. Users could browse the menu, place orders, and track status, all without leaving LINE.</p>
+
+          <h2>Why LINE LIFF?</h2>
+          <p>LINE Front-end Framework (LIFF) lets you embed a web app inside LINE's browser. This means you can build a full React or HTML interface that runs inside a LINE chat, with access to the user's LINE identity. It's perfect for a food ordering flow.</p>
+
+          <h2>Authentication</h2>
+          <p>LIFF provides a user token automatically when a LINE user opens the app. I verified this token on the backend using LINE's API to get the user's LINE ID, then looked them up in Supabase to determine their role.</p>
+          <pre><code>const profile = await liff.getProfile();
+const lineUserId = profile.userId;
+// Send to backend to get role
+const res = await fetch('/api/auth', {
+  method: 'POST',
+  body: JSON.stringify({ lineUserId })
+});</code></pre>
+
+          <h2>Three-Role System</h2>
+          <p>The system had three roles stored in Supabase:</p>
+          <ul>
+            <li><strong>Customer</strong> — browse menu, place orders, view order history, redeem points</li>
+            <li><strong>Shop Master</strong> — manage incoming orders, update order status, view daily summary</li>
+            <li><strong>Admin</strong> — manage the menu, view all orders, manage users and points</li>
+          </ul>
+          <p>Each role got a different dashboard UI, all served from the same Express backend but with role-based route guards.</p>
+
+          <h2>Real-Time Order Updates</h2>
+          <p>I used Supabase's real-time subscriptions to push order status updates to the shop dashboard without polling. When an order status changed in the database, the shop master's UI updated instantly.</p>
+
+          <h2>Points System</h2>
+          <p>Every order added points to the customer's account. Points could be redeemed for discounts on future orders. The tricky part was making this atomic — you don't want to add points if the order failed, or deduct points twice. Supabase's database functions (RPC) handled this cleanly.</p>
+
+          <h2>Rich Menu</h2>
+          <p>LINE's Rich Menu is the button grid that appears at the bottom of the chat. I configured different Rich Menus for different roles using the LINE Messaging API — customers got "Order", "History", "Points" buttons, while shop masters got "New Orders", "Today's Summary".</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- POST: weather-dashboard -->
+    <article id="post-weather-dashboard" class="post-content" style="display:none">
+      <img src="images/weather-dashboard.png" alt="Weather Dashboard" class="article-hero" />
+      <div class="article-body">
+        <button class="article-back" onclick="closePost()"><i class="fas fa-arrow-left"></i> Back to Notes</button>
+        <span class="article-tag">React</span>
+        <h1 class="article-title">Weather Dashboard: Building My First React App with Live API Data</h1>
+        <div class="article-meta">
+          <span><i class="fas fa-clock"></i> 5 min read</span>
+          <span><i class="fas fa-tag"></i> React, JavaScript, OpenWeatherMap API, Vercel</span>
+        </div>
+        <div class="article-content">
+          <p>I built this project to get hands-on experience with React while connecting to a real API. The Weather Dashboard lets you search any city and see current conditions plus a 5-day forecast, deployed live on Vercel.</p>
+
+          <h2>Component Structure</h2>
+          <p>I kept the structure simple and clean:</p>
+          <ul>
+            <li><strong>App.jsx</strong> — main state management, API calls</li>
+            <li><strong>SearchBar.jsx</strong> — controlled input with form submit</li>
+            <li><strong>Forecast.jsx</strong> — 5-day forecast cards</li>
+          </ul>
+          <p>Having the API logic all in <code>App.jsx</code> made it easy to pass data down as props and kept the child components focused on rendering.</p>
+
+          <h2>Fetching from OpenWeatherMap</h2>
+          <p>I used two endpoints — one for current weather and one for the 5-day forecast. Both needed an API key which I stored in a <code>.env</code> file using Vite's <code>import.meta.env</code>:</p>
+          <pre><code># .env
+VITE_API_KEY=your_key_here
+
+# In component
+const API_KEY = import.meta.env.VITE_API_KEY;</code></pre>
+          <p>Never hardcode API keys in your source code — even if the repo is private. Vercel lets you set environment variables in the project settings so the key stays secure in production.</p>
+
+          <h2>Handling the Forecast Data</h2>
+          <p>The forecast endpoint returns data every 3 hours for 5 days (40 entries total). To get one reading per day, I filtered to every 8th item — simple but effective for this use case.</p>
+          <pre><code>const dailyForecasts = forecastData.list
+  .filter((item, index) => index % 8 === 0)
+  .slice(0, 5);</code></pre>
+
+          <h2>What I Learned About React</h2>
+          <ul>
+            <li>State and props flow — keep state as high as it needs to be, no higher</li>
+            <li>Async/await in event handlers — always handle loading and error states</li>
+            <li>Environment variables with Vite — prefix with <code>VITE_</code> or they won't be exposed</li>
+            <li>Deploying to Vercel — just connect your GitHub repo and it auto-deploys on every push</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+  </div><!-- end article-view -->
+
+  <footer>
+    <p>Designed &amp; built by <span>Sai Hae Naing Lay</span> · 2025 · All rights reserved</p>
+  </footer>
+
+  <script>
+    /* Theme toggle */
+    const themeBtn  = document.getElementById('themeToggle');
+    const themeIcon = themeBtn.querySelector('i');
+    function applyTheme(t) {
+      document.body.classList.toggle('light', t === 'light');
+      themeIcon.className = t === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+      localStorage.setItem('theme', t);
+    }
+    applyTheme(localStorage.getItem('theme') || 'dark');
+    themeBtn.addEventListener('click', () =>
+      applyTheme(document.body.classList.contains('light') ? 'dark' : 'light')
+    );
+
+    /* Filter */
+    document.querySelectorAll('.fbtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const tag = btn.dataset.tag;
+        document.querySelectorAll('.blog-card').forEach(card => {
+          card.classList.toggle('hidden', tag !== 'all' && card.dataset.tag !== tag);
+        });
+      });
+    });
+
+    /* Post open/close */
+    function openPost(id) {
+      document.getElementById('blog-listing').style.display = 'none';
+      document.querySelector('footer').style.display = 'none';
+      const view = document.getElementById('article-view');
+      view.classList.add('visible');
+      document.querySelectorAll('.post-content').forEach(p => p.style.display = 'none');
+      document.getElementById('post-' + id).style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function closePost() {
+      document.getElementById('blog-listing').style.display = 'block';
+      document.querySelector('footer').style.display = 'block';
+      document.getElementById('article-view').classList.remove('visible');
+      document.querySelectorAll('.post-content').forEach(p => p.style.display = 'none');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+
+</body>
+</html>
