@@ -465,9 +465,9 @@
           <div class="contact-item">
             <div class="ci-icon"><i class="fas fa-envelope"></i></div>
             <div class="ci-text"><span>Email</span>
-              <p id="contact-email-display">haenainglay20@gmail.com</p>
+              <p>haenainglay20@gmail.com</p>
             </div>
-            <a id="contact-email-btn" href="#" class="ci-action"><i class="fas fa-paper-plane"></i></a>
+            <a href="mailto:haenainglay20@gmail.com" class="ci-action"><i class="fas fa-paper-plane"></i></a>
           </div>
           <div class="contact-item">
             <div class="ci-icon"><i class="fas fa-phone"></i></div>
@@ -517,22 +517,6 @@
   </footer>
 
   <script src="script.js"></script>
-  <script>
-    // Bypass Cloudflare email obfuscation by building email with JS
-    (function () {
-      var u = 'haenainglay20';
-      var d = 'gmail.com';
-      var e = u + '@' + d;
-      var el = document.getElementById('contact-email-display');
-      var btn = document.getElementById('contact-email-btn');
-      if (el) {
-        el.innerHTML = '<a href="mailto:' + e + '">' + e + '</a>';
-      }
-      if (btn) {
-        btn.href = 'mailto:' + e;
-      }
-    })();
-  </script>
 </body>
 
 </html>
