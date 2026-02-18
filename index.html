@@ -465,11 +465,9 @@
           <div class="contact-item">
             <div class="ci-icon"><i class="fas fa-envelope"></i></div>
             <div class="ci-text"><span>Email</span>
-              <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__"
-                  data-cfemail="345c55515a555d5a5358554d0604745359555d581a575b59">[email&#160;protected]</a></p>
+              <p id="contact-email-display">haenainglay20@gmail.com</p>
             </div>
-            <a href="/cdn-cgi/l/email-protection#4d252c28232c24232a212c347f7d0d2a202c2421632e2220" class="ci-action"><i
-                class="fas fa-paper-plane"></i></a>
+            <a id="contact-email-btn" href="#" class="ci-action"><i class="fas fa-paper-plane"></i></a>
           </div>
           <div class="contact-item">
             <div class="ci-icon"><i class="fas fa-phone"></i></div>
@@ -513,3 +511,28 @@
       </div>
     </div>
   </section>
+
+  <footer>
+    <p>Designed &amp; built by <span>Sai Hae Naing Lay</span> · 2026 · All rights reserved</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Bypass Cloudflare email obfuscation by building email with JS
+    (function () {
+      var u = 'haenainglay20';
+      var d = 'gmail.com';
+      var e = u + '@' + d;
+      var el = document.getElementById('contact-email-display');
+      var btn = document.getElementById('contact-email-btn');
+      if (el) {
+        el.innerHTML = '<a href="mailto:' + e + '">' + e + '</a>';
+      }
+      if (btn) {
+        btn.href = 'mailto:' + e;
+      }
+    })();
+  </script>
+</body>
+
+</html>

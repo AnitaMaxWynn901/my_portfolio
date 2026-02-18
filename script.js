@@ -1,5 +1,5 @@
 /* ===================================================
-   PORTFOLIO SCRIPT – Sai Hae Naing Lay
+   PORTFOLIO SCRIPT - Sai Hae Naing Lay
    =================================================== */
 
 /* ---------- TYPING EFFECT ---------- */
@@ -16,7 +16,7 @@ function tick() {
   typedEl.textContent = deleting ? word.slice(0, charIdx--) : word.slice(0, charIdx++);
   let delay = deleting ? 42 : 92;
   if (!deleting && charIdx > word.length) { delay = 1800; deleting = true; }
-  else if (deleting && charIdx < 0)       { deleting = false; roleIdx = (roleIdx + 1) % roles.length; charIdx = 0; delay = 400; }
+  else if (deleting && charIdx < 0) { deleting = false; roleIdx = (roleIdx + 1) % roles.length; charIdx = 0; delay = 400; }
   setTimeout(tick, delay);
 }
 setTimeout(tick, 900);
@@ -26,11 +26,26 @@ setTimeout(tick, 900);
 const sections = document.querySelectorAll('section[id]');
 const navAs    = document.querySelectorAll('.nav-links a');
 
-window.addEventListener('scroll', () => {
+function updateActiveNav() {
   let cur = '';
-  sections.forEach(s => { if (scrollY >= s.offsetTop - 130) cur = s.id; });
-  navAs.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + cur));
-}, { passive: true });
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 160) cur = s.id;
+  });
+  navAs.forEach(a => {
+    const href = a.getAttribute('href');
+    // Only toggle active for section links (starting with #)
+    if (href && href.startsWith('#')) {
+      a.classList.toggle('active', href === '#' + cur);
+    } else {
+      a.classList.remove('active');
+    }
+  });
+}
+
+window.addEventListener('scroll', updateActiveNav, { passive: true });
+// Also run on load so active state is correct immediately
+window.addEventListener('load', updateActiveNav);
+updateActiveNav();
 
 
 /* ---------- SMOOTH SCROLL ---------- */
@@ -53,8 +68,6 @@ function applyTheme(t) {
 }
 
 applyTheme(localStorage.getItem('theme') || 'dark');
-// Force dark if somehow light was saved as default
-if (!localStorage.getItem('theme')) applyTheme('dark');
 themeBtn.addEventListener('click', () =>
   applyTheme(document.body.classList.contains('light') ? 'dark' : 'light')
 );
@@ -76,11 +89,13 @@ filterBtns.forEach(btn => {
 
 /* ---------- SCROLL REVEAL ---------- */
 const revObs = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revObs.unobserve(e.target); } });
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); revObs.unobserve(e.target); }
+  });
 }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
 
 document.querySelectorAll(
-  '.project-card, .trait, .timeline-item, .skill-cat, .skills-extra-card, .contact-item, .social-card, .stats-card'
+  '.project-card, .trait, .timeline-item, .skill-cat, .skills-extra-card, .contact-item, .social-card, .stats-card, .edu-card'
 ).forEach((el, i) => {
   el.classList.add('reveal');
   el.style.transitionDelay = `${(i % 6) * 55}ms`;
