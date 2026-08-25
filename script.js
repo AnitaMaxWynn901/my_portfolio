@@ -4,7 +4,7 @@
 
 /* ---------- TYPING EFFECT ---------- */
 const roles = [
-  'Computer Engineering Student',
+  'Computer Engineer',
   'AI / ML Learner',
   'Web & App Developer'
 ];
